@@ -1,16 +1,21 @@
 # WebBrowser
 A web browser written in c# for f21sc
-## Homepage
+## Compiling and running
+mcs Runner.cs WebBrowser.cs UserData.cs -pkg:gtk-sharp-3.0 -out:a.exe
+
+mono a.exe
+
+### Homepage
 - [ ] Allow setting homepage
 - [ ] Allow deleting homepage
 - [ ] Allow changing homepage
 
-## Favorites
+### Favorites
 - [ ] Allow adding to favorites
 - [ ] Allow viewing favorites
 - [ ] Allow editing favorites
 
-## History
+### History
 - [ ] Allow viewing history
 - [ ] Allow deleting history
 - [ ] Allow moving back and forwards through history
