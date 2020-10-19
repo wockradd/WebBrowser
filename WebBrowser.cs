@@ -139,7 +139,7 @@ public class WebBrowser{
             asyncRequest(userData.homeUrl, true);
         }else{
             searchBar.Text = "";
-            buffer.Text = "No homepage set";
+            buffer.Text = "No homepage set.\nGo to View -> Homepage to set one.";
         }
     }
 
@@ -166,6 +166,8 @@ public class WebBrowser{
             webRes.Close();
             userData.currentUrl = url;
             if(addToHistory){userData.addHistory(url,DateTime.Now);}
+            statusText.Markup = "<span weight='bold' size='larger'>Status: " + statusCode.ToString() + "</span>";
+    
 
         }catch(WebException we){
             buffer.Text = we.Message;
@@ -174,17 +176,16 @@ public class WebBrowser{
                 webRes = we.Response;
                 statusCode = (int)((HttpWebResponse)webRes).StatusCode;   
                 webRes.Close();
-                userData.currentUrl = url;
-                if(addToHistory){userData.addHistory(url,DateTime.Now);}  
             }else{                        
               statusCode = -1;
             } 
+            userData.currentUrl = url;
+            if(addToHistory){userData.addHistory(url,DateTime.Now);}  
+            statusText.Markup = "<span weight='bold' size='larger'>Status: " + statusCode.ToString() + "</span>";
+    
 
         }catch(UriFormatException e){
-            statusCode = -1;
             buffer.Text = e.Message;
         }
-
-        statusText.Markup = "<span weight='bold' size='larger'>Status: " + statusCode.ToString() + "</span>";
     }
 }
