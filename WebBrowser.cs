@@ -24,7 +24,7 @@ public class WebBrowser{
     private Label statusText;
     private MenuBar menuBar;
     private Menu menu;
-    private MenuItem viewMenu,history,favorites,downloads,home;
+    private MenuItem viewMenu,history,favorites,home;
 
     private UserData userData;
     private Stream fileStream;
@@ -39,7 +39,7 @@ public class WebBrowser{
         Application.Init();
         initGui();
         loadHomepage();
-		Application.Run();
+	    Application.Run();
     }
 
     public void initGui(){
@@ -62,19 +62,18 @@ public class WebBrowser{
         viewMenu = new MenuItem("View");
         history = new MenuItem("History");
         favorites = new MenuItem("Favorites");
-        downloads = new MenuItem("Downloads");
         home = new MenuItem("Homepage");
 
         //add event handlers
         win.DeleteEvent +=(obj,args) => closeAndSave();
-        searchBar.Activated += (obj,args) => searchEntered();
+        searchBar.Activated += (obj,args) => asyncRequest(searchBar.Text, true);
         homeButton.Clicked += (obj,args) => loadHomepage();
+        reloadButton.Clicked += (obj,args) => reloadCurrentUrl();
 
         //set up menu
         viewMenu.Submenu = menu;
         menu.Append(history);
         menu.Append(favorites);
-        menu.Append(downloads);
         menu.Append(home);
         menuBar.Append(viewMenu);
 
@@ -114,15 +113,19 @@ public class WebBrowser{
         }
     }
 
-    
-    public void searchEntered(){
-        buffer.Text = "Loading...";
-        statusText.Text = "";
-        asyncRequest(searchBar.Text, true);
+    public void reloadCurrentUrl(){
+        if(userData.currentUrl != null){
+            searchBar.Text = userData.currentUrl; 
+            asyncRequest(userData.currentUrl, false);
+        }else{
+            buffer.Text = "Nothing to reload";
+        }
     }
 
 
+
     public void closeAndSave(){
+        userData.currentUrl = null;
         fileStream = File.Open("data", FileMode.Create);
         formatter = new BinaryFormatter();
         formatter.Serialize(fileStream,userData);
@@ -135,12 +138,16 @@ public class WebBrowser{
             searchBar.Text = userData.homeUrl; 
             asyncRequest(userData.homeUrl, true);
         }else{
+            searchBar.Text = "";
             buffer.Text = "No homepage set";
         }
     }
 
 
     public async void asyncRequest(string url, bool addToHistory){
+        buffer.Text = "Loading...";
+        statusText.Text = "";
+
         WebRequest webReq;
         WebResponse webRes;
         Stream resStream;
@@ -157,6 +164,7 @@ public class WebBrowser{
             buffer.Text = resString;
             statusCode = (int)((HttpWebResponse)webRes).StatusCode;
             webRes.Close();
+            userData.currentUrl = url;
             if(addToHistory){userData.addHistory(url,DateTime.Now);}
 
         }catch(WebException we){
@@ -166,6 +174,7 @@ public class WebBrowser{
                 webRes = we.Response;
                 statusCode = (int)((HttpWebResponse)webRes).StatusCode;   
                 webRes.Close();
+                userData.currentUrl = url;
                 if(addToHistory){userData.addHistory(url,DateTime.Now);}  
             }else{                        
               statusCode = -1;

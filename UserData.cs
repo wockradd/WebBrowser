@@ -4,8 +4,8 @@ using System.Collections.Generic;
 [Serializable]
 public class UserData{
     public string homeUrl {get;set;}
-    public int currentHistoryIndex {get;set;}
-    private  List<Favorite> favorites;
+    public string currentUrl {get;set;}
+    private List<Favorite> favorites;
     private List<History> history;
 
     [Serializable]
@@ -15,7 +15,7 @@ public class UserData{
     }
 
     [Serializable]
-    private struct History{
+    public struct History{
         public string url {get;set;}
         public DateTime time {get;set;}
     }
@@ -23,7 +23,6 @@ public class UserData{
     public UserData(){
         favorites = new List<Favorite>();
         history = new List<History>();
-        currentHistoryIndex = history.Count;
     }
 
     public void addHistory(string url, DateTime time){
