@@ -5,6 +5,14 @@ mcs Runner.cs WebBrowser.cs UserData.cs -pkg:gtk-sharp-3.0 -out:a.exe
 
 mono a.exe
 
+### General
+- [] Timeout if request is taking too long
+
+### View
+- [] history view
+- [] favorite view
+- [] homepage view
+
 ### Homepage
 - [ ] Allow setting homepage
 - [ ] Allow deleting homepage
@@ -18,4 +26,4 @@ mono a.exe
 ### History
 - [ ] Allow viewing history
 - [ ] Allow deleting history
-- [ ] Allow moving back and forwards through history
+- [x] Allow moving back and forwards through history

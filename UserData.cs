@@ -5,8 +5,9 @@ using System.Collections.Generic;
 public class UserData{
     public string homeUrl {get;set;}
     public string currentUrl {get;set;}
+    public int currentHistoryIndex {get;set;}
     private List<Favorite> favorites;
-    private List<History> history;
+    public List<History> history {get;set;}
 
     [Serializable]
     private struct Favorite{
@@ -23,6 +24,8 @@ public class UserData{
     public UserData(){
         favorites = new List<Favorite>();
         history = new List<History>();
+       // homeUrl = "http://zetcode.com/gui/gtksharp/menus/";
+        currentHistoryIndex = history.Count-1;
     }
 
     public void addHistory(string url, DateTime time){
@@ -30,10 +33,26 @@ public class UserData{
         h.time = DateTime.Now;
         h.url = url;
         history.Add(h);
+        currentHistoryIndex = history.Count-1;
+    }
+
+    public string getHistory(int index){
+        return history[index].url;
+    }
+
+    public void setUpForSaving(){
+        //weirdness if you dont have a homepage set
+        if(homeUrl == null){
+            currentHistoryIndex = history.Count;
+        }else{
+            currentHistoryIndex = history.Count-1;
+        }
+        currentUrl = null;
     }
 
     //just for testing
     public void print(){
+        System.Console.WriteLine("Currenturlindex :{0}",currentHistoryIndex);
             System.Console.WriteLine("History:");
           foreach(History h in history){
             System.Console.WriteLine("{0}\n{1}",h.url,h.time);

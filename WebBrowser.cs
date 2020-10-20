@@ -51,7 +51,9 @@ public class WebBrowser{
         hBox = new HBox(false,0);
         vBox = new VBox(false,0);
         backButton = new Button("<");
+        if(userData.currentHistoryIndex < 0){backButton.Sensitive = false;}
         forwardButton = new Button(">");
+        forwardButton.Sensitive = false;
         reloadButton = new Button("\u27F3");
         homeButton = new Button("\u2302");
         favoriteButton = new Button("\u2606");
@@ -69,6 +71,8 @@ public class WebBrowser{
         searchBar.Activated += (obj,args) => asyncRequest(searchBar.Text, true);
         homeButton.Clicked += (obj,args) => loadHomepage();
         reloadButton.Clicked += (obj,args) => reloadCurrentUrl();
+        backButton.Clicked += (obj,args) => goBack();
+        forwardButton.Clicked += (obj,args) => goForward();
 
         //set up menu
         viewMenu.Submenu = menu;
@@ -102,6 +106,16 @@ public class WebBrowser{
     }
 
 
+    public void goBack(){
+        asyncRequest(userData.getHistory(--userData.currentHistoryIndex),false);
+        searchBar.Text = userData.getHistory(userData.currentHistoryIndex);
+    }
+
+    public void goForward(){
+        asyncRequest(userData.getHistory(++userData.currentHistoryIndex),false);
+        searchBar.Text = userData.getHistory(userData.currentHistoryIndex);
+    }
+
     public void loadUserData(){
         try{
             fileStream = File.Open("data", FileMode.Open);
@@ -125,7 +139,7 @@ public class WebBrowser{
 
 
     public void closeAndSave(){
-        userData.currentUrl = null;
+        userData.setUpForSaving();
         fileStream = File.Open("data", FileMode.Create);
         formatter = new BinaryFormatter();
         formatter.Serialize(fileStream,userData);
@@ -145,6 +159,7 @@ public class WebBrowser{
 
 
     public async void asyncRequest(string url, bool addToHistory){
+        hBox.Sensitive = false;//stop user pressing buttons while we're loading
         buffer.Text = "Loading...";
         statusText.Text = "";
 
@@ -186,6 +201,20 @@ public class WebBrowser{
 
         }catch(UriFormatException e){
             buffer.Text = e.Message;
+        }
+
+        hBox.Sensitive = true;
+
+
+        if(userData.currentHistoryIndex >= 1){
+            backButton.Sensitive = true;
+        }else{
+            backButton.Sensitive = false;
+        }
+        if(userData.currentHistoryIndex < userData.history.Count-1){
+            forwardButton.Sensitive = true;
+        }else{
+            forwardButton.Sensitive = false;
         }
     }
 }
