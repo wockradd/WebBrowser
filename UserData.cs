@@ -6,11 +6,11 @@ public class UserData{
     public string homeUrl {get;set;}
     public string currentUrl {get;set;}
     public int currentHistoryIndex {get;set;}
-    private List<Favorite> favorites;
+    public List<Favorite> favorites {get;set;}
     public List<History> history {get;set;}
 
     [Serializable]
-    private struct Favorite{
+    public struct Favorite{
         public string name {get;set;}
         public string url {get;set;}
     }
@@ -24,7 +24,7 @@ public class UserData{
     public UserData(){
         favorites = new List<Favorite>();
         history = new List<History>();
-       // homeUrl = "http://zetcode.com/gui/gtksharp/menus/";
+        homeUrl = "http://zetcode.com/gui/gtksharp/menus/";
         currentHistoryIndex = history.Count-1;
     }
 
@@ -36,10 +36,18 @@ public class UserData{
         currentHistoryIndex = history.Count-1;
     }
 
+    public void addFavorite(string url){
+        Favorite f = new Favorite();
+        f.url = url;
+        f.name = url;
+        favorites.Add(f);
+    }
+
     public string getHistory(int index){
         return history[index].url;
     }
 
+    //janky
     public void setUpForSaving(){
         //weirdness if you dont have a homepage set
         if(homeUrl == null){

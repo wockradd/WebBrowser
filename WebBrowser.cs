@@ -51,12 +51,10 @@ public class WebBrowser{
         hBox = new HBox(false,0);
         vBox = new VBox(false,0);
         backButton = new Button("<");
-        if(userData.currentHistoryIndex < 0){backButton.Sensitive = false;}
         forwardButton = new Button(">");
-        forwardButton.Sensitive = false;
         reloadButton = new Button("\u27F3");
         homeButton = new Button("\u2302");
-        favoriteButton = new Button("\u2606");
+        favoriteButton = new Button();
         searchBar = new Entry();
         statusText = new Label();
         menuBar = new MenuBar();
@@ -66,6 +64,8 @@ public class WebBrowser{
         favorites = new MenuItem("Favorites");
         home = new MenuItem("Homepage");
 
+        setButtonStates();
+
         //add event handlers
         win.DeleteEvent +=(obj,args) => closeAndSave();
         searchBar.Activated += (obj,args) => asyncRequest(searchBar.Text, true);
@@ -73,6 +73,7 @@ public class WebBrowser{
         reloadButton.Clicked += (obj,args) => reloadCurrentUrl();
         backButton.Clicked += (obj,args) => goBack();
         forwardButton.Clicked += (obj,args) => goForward();
+        favoriteButton.Clicked += (obj,args) => editFavorites();
 
         //set up menu
         viewMenu.Submenu = menu;
@@ -105,16 +106,35 @@ public class WebBrowser{
 		win.ShowAll();
     }
 
+    public void editFavorites(){
+        bool alreadyFavorite = false;
+        foreach(UserData.Favorite f in userData.favorites){
+            if(f.url == userData.currentUrl){
+                alreadyFavorite = true;
+                userData.favorites.Remove(f);
+                statusText.Markup = "<span weight='bold' size='larger'>Removed from favorites</span>";
+                break;
+            }
+        }
+        if(!alreadyFavorite){
+            statusText.Markup = "<span weight='bold' size='larger'>Added to favorites</span>";
+            userData.addFavorite(userData.currentUrl);
+        }
+        setButtonStates();
+    }
+
 
     public void goBack(){
         asyncRequest(userData.getHistory(--userData.currentHistoryIndex),false);
         searchBar.Text = userData.getHistory(userData.currentHistoryIndex);
     }
 
+
     public void goForward(){
         asyncRequest(userData.getHistory(++userData.currentHistoryIndex),false);
         searchBar.Text = userData.getHistory(userData.currentHistoryIndex);
     }
+
 
     public void loadUserData(){
         try{
@@ -126,6 +146,7 @@ public class WebBrowser{
             userData = new UserData();
         }
     }
+
 
     public void reloadCurrentUrl(){
         if(userData.currentUrl != null){
@@ -147,6 +168,7 @@ public class WebBrowser{
         Application.Quit();
     }
 
+
     public void loadHomepage(){
         if(userData.homeUrl != null){
             searchBar.Text = userData.homeUrl; 
@@ -154,10 +176,33 @@ public class WebBrowser{
         }else{
             searchBar.Text = "";
             buffer.Text = "No homepage set.\nGo to View -> Homepage to set one.";
+            favoriteButton.Sensitive = false;
         }
     }
 
 
+    public void setButtonStates(){
+         if(userData.currentHistoryIndex >= 1){
+            backButton.Sensitive = true;
+        }else{
+            backButton.Sensitive = false;
+        }
+        if(userData.currentHistoryIndex < userData.history.Count-1){
+            forwardButton.Sensitive = true;
+        }else{
+            forwardButton.Sensitive = false;
+        }
+        favoriteButton.Label = "\u2606";
+        foreach(UserData.Favorite f in userData.favorites){
+            if(f.url == userData.currentUrl){
+                favoriteButton.Label = "\u2605";
+                break;
+            }
+        }
+    }
+
+    //janky, clean up way exceptions are handled
+    //and move ui changing stuff to its own method
     public async void asyncRequest(string url, bool addToHistory){
         hBox.Sensitive = false;//stop user pressing buttons while we're loading
         buffer.Text = "Loading...";
@@ -182,7 +227,7 @@ public class WebBrowser{
             userData.currentUrl = url;
             if(addToHistory){userData.addHistory(url,DateTime.Now);}
             statusText.Markup = "<span weight='bold' size='larger'>Status: " + statusCode.ToString() + "</span>";
-    
+            favoriteButton.Sensitive = true;
 
         }catch(WebException we){
             buffer.Text = we.Message;
@@ -191,30 +236,23 @@ public class WebBrowser{
                 webRes = we.Response;
                 statusCode = (int)((HttpWebResponse)webRes).StatusCode;   
                 webRes.Close();
+                favoriteButton.Sensitive = true;
             }else{                        
               statusCode = -1;
             } 
             userData.currentUrl = url;
             if(addToHistory){userData.addHistory(url,DateTime.Now);}  
             statusText.Markup = "<span weight='bold' size='larger'>Status: " + statusCode.ToString() + "</span>";
-    
+
 
         }catch(UriFormatException e){
             buffer.Text = e.Message;
+            favoriteButton.Sensitive = false;
         }
 
         hBox.Sensitive = true;
 
 
-        if(userData.currentHistoryIndex >= 1){
-            backButton.Sensitive = true;
-        }else{
-            backButton.Sensitive = false;
-        }
-        if(userData.currentHistoryIndex < userData.history.Count-1){
-            forwardButton.Sensitive = true;
-        }else{
-            forwardButton.Sensitive = false;
-        }
+       setButtonStates();
     }
 }

@@ -7,6 +7,8 @@ mono a.exe
 
 ### General
 - [] Timeout if request is taking too long
+- [] currentUrl should definetly be in webbrowser, not userdata
+- [] just need to do a lot of refactoring i think only add more features once its nice and clean
 
 ### View
 - [] history view
@@ -17,9 +19,11 @@ mono a.exe
 - [ ] Allow setting homepage
 - [ ] Allow deleting homepage
 - [ ] Allow changing homepage
+- [x] Allow going to homepage
 
 ### Favorites
-- [ ] Allow adding to favorites
+- [x] Allow adding to favorites
+- [x] Allow removing to favorites
 - [ ] Allow viewing favorites
 - [ ] Allow editing favorites
 
