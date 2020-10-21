@@ -1,8 +1,5 @@
-using System.Net;
 using Gtk;
-using System;
 using System.IO;
-using System.Text.RegularExpressions;
 using System.Runtime.Serialization.Formatters.Binary;
 
 /*
@@ -12,73 +9,50 @@ using System.Runtime.Serialization.Formatters.Binary;
     http://status.savanttools.com/?code=404%20Not%20Found
 */
 
-
+/*
+    Main GUI class containing all our widgets
+*/
 public class WebBrowser{
-    private Regex urlRegex = new Regex(@"^https?\:\/\/(www\.)?[a-zA-Z0-9@:%._\+~#=-]+\.[a-zA-Z0-9@:%_\+.~#?&/=-]+$");
-    private string currentUrl = null;
-
+    //deafult widgets
     private Window win;
-    private TextView view;
-    private TextBuffer buffer;
-    private ScrolledWindow scroll;
-    private HBox hBox;
     private VBox vBox; 
-    private Button backButton,forwardButton,reloadButton,homeButton,favoriteButton;
-    private Entry searchBar;
-    private Label statusText;
     private MenuBar menuBar;
     private Menu menu;
     private MenuItem viewMenu,history,favorites,home;
 
+    //custom widgets
+    private MainView mainView;
+
+    //file data vars
     private UserData userData;
     private Stream fileStream;
     private BinaryFormatter formatter;
 
 
     public WebBrowser(){
-  
         loadUserData();
-
-        userData.print();
-
         Application.Init();
         initGui();
-        loadHomepage();
 	    Application.Run();
     }
+
 
     public void initGui(){
         //init widgets
         win = new Window ("Browser");
-        view = new TextView ();
-		buffer = view.Buffer;
-        scroll = new ScrolledWindow();
-        hBox = new HBox(false,0);
         vBox = new VBox(false,0);
-        backButton = new Button("<");
-        forwardButton = new Button(">");
-        reloadButton = new Button("\u27F3");
-        homeButton = new Button("\u2302");
-        favoriteButton = new Button();
-        searchBar = new Entry();
-        statusText = new Label();
         menuBar = new MenuBar();
         menu = new Menu();
         viewMenu = new MenuItem("View");
         history = new MenuItem("History");
         favorites = new MenuItem("Favorites");
         home = new MenuItem("Homepage");
+        mainView = new MainView(userData);
 
-        setButtonStates();
 
         //add event handlers
         win.DeleteEvent +=(obj,args) => closeAndSave();
-        searchBar.Activated += (obj,args) => asyncRequest(searchBar.Text, true);
-        homeButton.Clicked += (obj,args) => loadHomepage();
-        reloadButton.Clicked += (obj,args) => reloadCurrentUrl();
-        backButton.Clicked += (obj,args) => goBack();
-        forwardButton.Clicked += (obj,args) => goForward();
-        favoriteButton.Clicked += (obj,args) => editFavorites();
+        
 
         //set up menu
         viewMenu.Submenu = menu;
@@ -87,23 +61,11 @@ public class WebBrowser{
         menu.Append(home);
         menuBar.Append(viewMenu);
 
-        //set up main view
-        view.Editable = false;
-        scroll.Add(view);
-
-        //set up serch bar layout
-        hBox.PackStart(backButton,false,false,0);
-        hBox.PackStart(forwardButton,false,false,0);
-        hBox.PackStart(reloadButton,false,false,0);
-        hBox.PackStart(searchBar,true,true,0);
-        hBox.PackStart(homeButton,false,false,0);
-        hBox.PackStart(favoriteButton,false,false,0);
-
-        //set up the final layout
+        
+        //set up the default layout
         vBox.PackStart(menuBar,false,false,0);
-        vBox.PackStart(hBox,false,false,0);
-        vBox.PackStart(scroll,true,true,0);
-        vBox.PackStart(statusText,false,false,0);
+        vBox.PackStart(mainView,true,true,0);
+        
 
         //finish up 
 		win.SetDefaultSize (1000,600);
@@ -111,34 +73,6 @@ public class WebBrowser{
 		win.ShowAll();
     }
 
-    public void editFavorites(){
-        bool alreadyFavorite = false;
-        foreach(UserData.Favorite f in userData.favorites){
-            if(f.url == currentUrl){
-                alreadyFavorite = true;
-                userData.favorites.Remove(f);
-                statusText.Markup = "<span weight='bold' size='larger'>Removed from favorites</span>";
-                break;
-            }
-        }
-        if(!alreadyFavorite){
-            statusText.Markup = "<span weight='bold' size='larger'>Added to favorites</span>";
-            userData.addFavorite(currentUrl);
-        }
-        setButtonStates();
-    }
-
-
-    public void goBack(){
-        asyncRequest(userData.getHistory(--userData.currentHistoryIndex),false);
-        searchBar.Text = userData.getHistory(userData.currentHistoryIndex);
-    }
-
-
-    public void goForward(){
-        asyncRequest(userData.getHistory(++userData.currentHistoryIndex),false);
-        searchBar.Text = userData.getHistory(userData.currentHistoryIndex);
-    }
 
 
     public void loadUserData(){
@@ -153,17 +87,6 @@ public class WebBrowser{
     }
 
 
-    public void reloadCurrentUrl(){
-        if(currentUrl != null){
-            searchBar.Text = currentUrl; 
-            asyncRequest(currentUrl, false);
-        }else{
-            buffer.Text = "Nothing to reload";
-        }
-    }
-
-
-
     public void closeAndSave(){
         userData.setUpForSaving();
         fileStream = File.Open("data", FileMode.Create);
@@ -171,94 +94,5 @@ public class WebBrowser{
         formatter.Serialize(fileStream,userData);
         fileStream.Close();
         Application.Quit();
-    }
-
-
-    public void loadHomepage(){
-        if(userData.homeUrl != null){
-            searchBar.Text = userData.homeUrl; 
-            asyncRequest(userData.homeUrl, true);
-        }else{
-            searchBar.Text = "";
-            buffer.Text = "No homepage set.\nGo to View -> Homepage to set one.";
-            favoriteButton.Sensitive = false;
-        }
-    }
-
-
-    public void setButtonStates(){
-         if(userData.currentHistoryIndex >= 1){
-            backButton.Sensitive = true;
-        }else{
-            backButton.Sensitive = false;
-        }
-
-        if(userData.currentHistoryIndex < userData.history.Count-1){
-            forwardButton.Sensitive = true;
-        }else{
-            forwardButton.Sensitive = false;
-        }
-
-        favoriteButton.Label = "\u2606"; // default state, star outline
-        foreach(UserData.Favorite f in userData.favorites){
-            if(f.url == currentUrl){
-                favoriteButton.Label = "\u2605";//filled star if in favorites
-                break;
-            }
-        }
-    }
-
-
-    public async void asyncRequest(string url, bool addToHistory){
-        hBox.Sensitive = false;//stop user pressing buttons while we're loading
-        buffer.Text = "Loading...";
-        statusText.Text = "";
-
-        WebRequest webReq;
-        WebResponse webRes;
-        Stream resStream;
-        StreamReader streamReader;
-        string resString;
-        int statusCode;
-        bool fatalError = false;
-
-        url = url.Trim();
-        if(!urlRegex.IsMatch(url)){
-            buffer.Text = "Invalid url";
-            favoriteButton.Sensitive = false;
-        }else{
-
-            webReq = WebRequest.Create(url);
-            try{
-                webRes = await webReq.GetResponseAsync();
-                resStream = webRes.GetResponseStream();
-                streamReader= new StreamReader(resStream);
-                resString = streamReader.ReadToEnd();
-                buffer.Text = resString;
-
-            }catch(WebException we){
-                buffer.Text = we.Message;
-                if(we.Status == WebExceptionStatus.ProtocolError){//404,403,etc
-                    webRes = we.Response;
-                }else{                                            //name resolution error, etc                   
-                    statusCode = -1;
-                    statusText.Markup = "<span weight='bold' size='larger'>Status: " + statusCode.ToString() + "</span>";
-                    webRes = null;
-                    fatalError = true;
-                } 
-            }
-
-            if(!fatalError){
-                statusCode = (int)((HttpWebResponse)webRes).StatusCode;
-                statusText.Markup = "<span weight='bold' size='larger'>Status: " + statusCode.ToString() + "</span>";
-                webRes.Close();
-                favoriteButton.Sensitive = true;
-            }
-
-            currentUrl = url;
-            if(addToHistory){userData.addHistory(url,DateTime.Now);}
-        }
-        hBox.Sensitive = true;
-        setButtonStates();
     }
 }

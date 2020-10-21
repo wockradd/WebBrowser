@@ -23,13 +23,13 @@ public class UserData{
     public UserData(){
         favorites = new List<Favorite>();
         history = new List<History>();
-        //homeUrl = "http://zetcode.com/gui/gtksharp/menus/"; //JUST FOR TESTING
+        homeUrl = "http://zetcode.com/gui/gtksharp/menus/"; //JUST FOR TESTING
         currentHistoryIndex = history.Count-1;
     }
 
     public void addHistory(string url, DateTime time){
         History h = new History();
-        h.time = DateTime.Now;
+        h.time = time;
         h.url = url;
         history.Add(h);
         currentHistoryIndex = history.Count-1;

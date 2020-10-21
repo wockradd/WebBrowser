@@ -8,7 +8,7 @@ mono a.exe
 ### General
 - [x] Timeout if request is taking too long
 - [x] currentUrl should definetly be in webbrowser, not userdata
-- [ ] just need to do a lot of refactoring, only add more features once its nice and clean
+- [x] just need to do a lot of refactoring, only add more features once its nice and clean
 - [ ] check if messing with menus while getting requests breaks everything
 
 ### View
