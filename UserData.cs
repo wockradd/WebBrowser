@@ -4,7 +4,6 @@ using System.Collections.Generic;
 [Serializable]
 public class UserData{
     public string homeUrl {get;set;}
-    public string currentUrl {get;set;}
     public int currentHistoryIndex {get;set;}
     public List<Favorite> favorites {get;set;}
     public List<History> history {get;set;}
@@ -24,7 +23,7 @@ public class UserData{
     public UserData(){
         favorites = new List<Favorite>();
         history = new List<History>();
-        homeUrl = "http://zetcode.com/gui/gtksharp/menus/";
+        //homeUrl = "http://zetcode.com/gui/gtksharp/menus/"; //JUST FOR TESTING
         currentHistoryIndex = history.Count-1;
     }
 
@@ -49,13 +48,12 @@ public class UserData{
 
     //janky
     public void setUpForSaving(){
-        //weirdness if you dont have a homepage set
+        //weirdness if you dont have a homepage set, will explain in report
         if(homeUrl == null){
             currentHistoryIndex = history.Count;
         }else{
             currentHistoryIndex = history.Count-1;
         }
-        currentUrl = null;
     }
 
     //just for testing

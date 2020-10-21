@@ -2,6 +2,7 @@ using System.Net;
 using Gtk;
 using System;
 using System.IO;
+using System.Text.RegularExpressions;
 using System.Runtime.Serialization.Formatters.Binary;
 
 /*
@@ -13,6 +14,9 @@ using System.Runtime.Serialization.Formatters.Binary;
 
 
 public class WebBrowser{
+    private Regex urlRegex = new Regex(@"^https?\:\/\/(www\.)?[a-zA-Z0-9@:%._\+~#=-]+\.[a-zA-Z0-9@:%_\+.~#?&/=-]+$");
+    private string currentUrl = null;
+
     private Window win;
     private TextView view;
     private TextBuffer buffer;
@@ -32,6 +36,7 @@ public class WebBrowser{
 
 
     public WebBrowser(){
+  
         loadUserData();
 
         userData.print();
@@ -109,7 +114,7 @@ public class WebBrowser{
     public void editFavorites(){
         bool alreadyFavorite = false;
         foreach(UserData.Favorite f in userData.favorites){
-            if(f.url == userData.currentUrl){
+            if(f.url == currentUrl){
                 alreadyFavorite = true;
                 userData.favorites.Remove(f);
                 statusText.Markup = "<span weight='bold' size='larger'>Removed from favorites</span>";
@@ -118,7 +123,7 @@ public class WebBrowser{
         }
         if(!alreadyFavorite){
             statusText.Markup = "<span weight='bold' size='larger'>Added to favorites</span>";
-            userData.addFavorite(userData.currentUrl);
+            userData.addFavorite(currentUrl);
         }
         setButtonStates();
     }
@@ -149,9 +154,9 @@ public class WebBrowser{
 
 
     public void reloadCurrentUrl(){
-        if(userData.currentUrl != null){
-            searchBar.Text = userData.currentUrl; 
-            asyncRequest(userData.currentUrl, false);
+        if(currentUrl != null){
+            searchBar.Text = currentUrl; 
+            asyncRequest(currentUrl, false);
         }else{
             buffer.Text = "Nothing to reload";
         }
@@ -187,22 +192,23 @@ public class WebBrowser{
         }else{
             backButton.Sensitive = false;
         }
+
         if(userData.currentHistoryIndex < userData.history.Count-1){
             forwardButton.Sensitive = true;
         }else{
             forwardButton.Sensitive = false;
         }
-        favoriteButton.Label = "\u2606";
+
+        favoriteButton.Label = "\u2606"; // default state, star outline
         foreach(UserData.Favorite f in userData.favorites){
-            if(f.url == userData.currentUrl){
-                favoriteButton.Label = "\u2605";
+            if(f.url == currentUrl){
+                favoriteButton.Label = "\u2605";//filled star if in favorites
                 break;
             }
         }
     }
 
-    //janky, clean up way exceptions are handled
-    //and move ui changing stuff to its own method
+
     public async void asyncRequest(string url, bool addToHistory){
         hBox.Sensitive = false;//stop user pressing buttons while we're loading
         buffer.Text = "Loading...";
@@ -214,45 +220,45 @@ public class WebBrowser{
         StreamReader streamReader;
         string resString;
         int statusCode;
-        
-        try{
+        bool fatalError = false;
+
+        url = url.Trim();
+        if(!urlRegex.IsMatch(url)){
+            buffer.Text = "Invalid url";
+            favoriteButton.Sensitive = false;
+        }else{
+
             webReq = WebRequest.Create(url);
-            webRes = await webReq.GetResponseAsync();
-            resStream = webRes.GetResponseStream();
-            streamReader= new StreamReader(resStream);
-            resString = streamReader.ReadToEnd();
-            buffer.Text = resString;
-            statusCode = (int)((HttpWebResponse)webRes).StatusCode;
-            webRes.Close();
-            userData.currentUrl = url;
-            if(addToHistory){userData.addHistory(url,DateTime.Now);}
-            statusText.Markup = "<span weight='bold' size='larger'>Status: " + statusCode.ToString() + "</span>";
-            favoriteButton.Sensitive = true;
+            try{
+                webRes = await webReq.GetResponseAsync();
+                resStream = webRes.GetResponseStream();
+                streamReader= new StreamReader(resStream);
+                resString = streamReader.ReadToEnd();
+                buffer.Text = resString;
 
-        }catch(WebException we){
-            buffer.Text = we.Message;
+            }catch(WebException we){
+                buffer.Text = we.Message;
+                if(we.Status == WebExceptionStatus.ProtocolError){//404,403,etc
+                    webRes = we.Response;
+                }else{                                            //name resolution error, etc                   
+                    statusCode = -1;
+                    statusText.Markup = "<span weight='bold' size='larger'>Status: " + statusCode.ToString() + "</span>";
+                    webRes = null;
+                    fatalError = true;
+                } 
+            }
 
-            if(we.Status == WebExceptionStatus.ProtocolError){
-                webRes = we.Response;
-                statusCode = (int)((HttpWebResponse)webRes).StatusCode;   
+            if(!fatalError){
+                statusCode = (int)((HttpWebResponse)webRes).StatusCode;
+                statusText.Markup = "<span weight='bold' size='larger'>Status: " + statusCode.ToString() + "</span>";
                 webRes.Close();
                 favoriteButton.Sensitive = true;
-            }else{                        
-              statusCode = -1;
-            } 
-            userData.currentUrl = url;
-            if(addToHistory){userData.addHistory(url,DateTime.Now);}  
-            statusText.Markup = "<span weight='bold' size='larger'>Status: " + statusCode.ToString() + "</span>";
+            }
 
-
-        }catch(UriFormatException e){
-            buffer.Text = e.Message;
-            favoriteButton.Sensitive = false;
+            currentUrl = url;
+            if(addToHistory){userData.addHistory(url,DateTime.Now);}
         }
-
         hBox.Sensitive = true;
-
-
-       setButtonStates();
+        setButtonStates();
     }
 }

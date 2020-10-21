@@ -6,18 +6,18 @@ mcs Runner.cs WebBrowser.cs UserData.cs -pkg:gtk-sharp-3.0 -out:a.exe
 mono a.exe
 
 ### General
-- [] Timeout if request is taking too long
-- [] currentUrl should definetly be in webbrowser, not userdata
-- [] just need to do a lot of refactoring i think only add more features once its nice and clean
+- [x] Timeout if request is taking too long
+- [x] currentUrl should definetly be in webbrowser, not userdata
+- [ ] just need to do a lot of refactoring, only add more features once its nice and clean
+- [ ] check if messing with menus while getting requests breaks everything
 
 ### View
-- [] history view
-- [] favorite view
-- [] homepage view
+- [ ] history view
+- [ ] favorite view
+- [ ] homepage view
 
 ### Homepage
 - [ ] Allow setting homepage
-- [ ] Allow deleting homepage
 - [ ] Allow changing homepage
 - [x] Allow going to homepage
 
