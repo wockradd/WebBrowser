@@ -61,11 +61,11 @@ public class UserData{
         System.Console.WriteLine("Currenturlindex :{0}",currentHistoryIndex);
             System.Console.WriteLine("History:");
           foreach(History h in history){
-            System.Console.WriteLine("{0}\n{1}",h.url,h.time);
+            System.Console.WriteLine("url:{0}\ntime:{1}",h.url,h.time);
         }
         System.Console.WriteLine("\nFavorites:");
           foreach(Favorite f in favorites){
-            System.Console.WriteLine("{0}\n{1}",f.url,f.name);
+            System.Console.WriteLine("url:{0}\nname:{1}",f.url,f.name);
         }
         System.Console.WriteLine("\nHomepage:\n{0}",homeUrl);
       

@@ -12,6 +12,10 @@ public class Requester{
 
     static private Regex urlRegex = new Regex(@"^https?\:\/\/(www\.)?[a-zA-Z0-9@:%._\+~#=-]+\.[a-zA-Z0-9@:%_\+.~#?&/=-]+$");
     
+    static public bool matchesUrl(string test){
+        return urlRegex.IsMatch(test);
+    }
+
     static public async Task<Response> asyncRequest(string url){
         WebRequest webReq;
         WebResponse webRes;

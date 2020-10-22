@@ -10,6 +10,7 @@ mono a.exe
 - [x] currentUrl should definetly be in webbrowser, not userdata
 - [x] just need to do a lot of refactoring, only add more features once its nice and clean
 - [ ] check if messing with menus while getting requests breaks everything
+- [ ] currently it saves everything to your history, even garbage urls, good or bad thing?
 
 ### View
 - [ ] history view
@@ -17,8 +18,8 @@ mono a.exe
 - [ ] homepage view
 
 ### Homepage
-- [ ] Allow setting homepage
-- [ ] Allow changing homepage
+- [x] Allow setting homepage
+- [x] Allow changing homepage
 - [x] Allow going to homepage
 
 ### Favorites

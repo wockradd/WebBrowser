@@ -6,9 +6,7 @@ using System;
     Widget that contains the main default view with the search bar and stuff
 */
 public class MainView:VBox{
-
-    private string currentUrl = null;
-
+    //gui vars
     private TextView view;
     private TextBuffer buffer;
     private ScrolledWindow scroll;
@@ -17,10 +15,14 @@ public class MainView:VBox{
     private Entry searchBar;
     private Label statusText;
     
+    //logic vars
+    private string currentUrl = null;
     private UserData userData;
     private Requester.Response response;
 
+
     public MainView(UserData data){
+        //init widgets
         view = new TextView ();
 		buffer = view.Buffer;
         scroll = new ScrolledWindow();
@@ -44,6 +46,7 @@ public class MainView:VBox{
         hBox.PackStart(searchBar,true,true,0);
         hBox.PackStart(homeButton,false,false,0);
         hBox.PackStart(favoriteButton,false,false,0);
+        
         this.PackStart(hBox,false,false,0);
         this.PackStart(scroll,true,true,0);
         this.PackStart(statusText,false,false,0);
@@ -58,10 +61,9 @@ public class MainView:VBox{
         forwardButton.Clicked += (obj,args) => goForward();
 
 
-        //load in user data and set up
+        //load in user data and set up dafault state
         userData = data;
         setButtonStates();
-        loadHomepage();
     }
 
 
@@ -71,7 +73,6 @@ public class MainView:VBox{
         }else{
             backButton.Sensitive = false;
         }
-
         if(userData.currentHistoryIndex < userData.history.Count-1){
             forwardButton.Sensitive = true;
         }else{
