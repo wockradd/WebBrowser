@@ -23,7 +23,7 @@ public class UserData{
     public UserData(){
         favorites = new List<Favorite>();
         history = new List<History>();
-        homeUrl = "http://zetcode.com/gui/gtksharp/menus/"; //JUST FOR TESTING
+        //homeUrl = "http://zetcode.com/gui/gtksharp/menus/"; //JUST FOR TESTING
         currentHistoryIndex = history.Count-1;
     }
 
@@ -32,6 +32,11 @@ public class UserData{
         h.time = time;
         h.url = url;
         history.Add(h);
+        currentHistoryIndex = history.Count-1;
+    }
+
+    public void deleteHistory(){
+        this.history = new List<History>();
         currentHistoryIndex = history.Count-1;
     }
 

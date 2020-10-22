@@ -12,7 +12,7 @@ public class HomeView:VBox{
         userData = data;
 
         currentLabel = new Label("Current Homepage:");
-        currentEntry = new Entry(userData.homeUrl);
+        currentEntry = new Entry();
         newLabel = new Label("New Homepage:");
         newEntry = new Entry();
         update = new Button("Update");
@@ -28,6 +28,13 @@ public class HomeView:VBox{
         this.PackStart(newLabel,false,false,0);
         this.PackStart(newEntry,false,false,0);
         this.PackStart(buttonAlign,false,false,0);
+
+        setDefaultState();
+    }
+
+    public void setDefaultState(){
+        currentEntry.Text = userData.homeUrl;
+        newEntry.Text = "";
     }
 
 

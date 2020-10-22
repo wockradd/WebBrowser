@@ -64,6 +64,7 @@ public class MainView:VBox{
         //load in user data and set up dafault state
         userData = data;
         setButtonStates();
+        loadHomepage();
     }
 
 

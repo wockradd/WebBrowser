@@ -14,6 +14,7 @@ using System.Runtime.Serialization.Formatters.Binary;
 */
 public class WebBrowser{
     enum States {Main,Home,Favorites,History}
+    States currentState;
 
     //deafult widgets
     private Window win;
@@ -25,6 +26,8 @@ public class WebBrowser{
     //custom widgets
     private MainView mainView;
     private HomeView homeView;
+    //private FavoritesView favoritesView;
+    private HistoryView historyView;
 
     //file data vars
     private UserData userData;
@@ -53,27 +56,35 @@ public class WebBrowser{
         main = new MenuItem("Main");
         mainView = new MainView(userData);
         homeView = new HomeView(userData);
+        //favoritesView = new FavoritesView(userData);
+        historyView = new HistoryView(userData);
 
 
         //add event handlers
         win.DeleteEvent +=(obj,args) => closeAndSave();
         home.Activated += (obj,args) => setState(States.Home);
         main.Activated += (obj,args) => setState(States.Main);
-        
+        favorites.Activated += (obj,args) => setState(States.Favorites);
+        history.Activated += (obj,args) => setState(States.History);
+
 
         //set up menu
         viewMenu.Submenu = menu;
+        menu.Add(home);
+        menu.Add(favorites);
+        menu.Add(history);
         menuBar.Append(viewMenu);
 
         
         //set up the default layout
         vBox.PackStart(menuBar,false,false,0);
-        setState(States.Main);
-        
+        vBox.PackStart(mainView,true,true,0);
         
 
         //finish up 
-		win.SetDefaultSize (1000,600);
+        currentState = States.Main;
+        win.SetDefaultSize (1000,600);
+        win.Resizable = false;
         win.Add(vBox);
 		win.ShowAll();
     }
@@ -89,6 +100,7 @@ public class WebBrowser{
         }catch(FileNotFoundException fnfe){
             userData = new UserData();
         }
+        userData.print();
     }
 
 
@@ -98,32 +110,55 @@ public class WebBrowser{
         formatter = new BinaryFormatter();
         formatter.Serialize(fileStream,userData);
         fileStream.Close();
+        userData.print();
         Application.Quit();
     }
 
-    //make better
-    private void setState(States s){
-        //remove all views that arent you, add all menu items that arent you
-        switch(s){
+    
+    private void setState(States newState){
+        //what to do to get ready for state change
+        switch(currentState){
             case States.Main:
-                vBox.Remove(homeView);
-                vBox.Add(mainView);
-                menu.Remove(main);
-                menu.Add(home);
-                mainView.loadHomepage();
-            break;
-            case States.History:
-            break;
-            case States.Favorites:
-            break;
-            case States.Home:
                 vBox.Remove(mainView);
-                vBox.Add(homeView);
-                menu.Remove(home);
                 menu.Add(main);
             break;
+            case States.History:
+                vBox.Remove(historyView);
+                menu.Add(history);
+            break;
+            case States.Favorites:
+                //vBox.Remove(favoritesView);
+                //menu.Add(favorites);
+            break;
+            case States.Home:
+                vBox.Remove(homeView);
+                homeView.setDefaultState();
+                menu.Add(home);
+            break;
         }
-        win.Resizable = false;
+
+        //what to do to finalise the state change
+        switch(newState){
+            case States.Main:
+                vBox.Add(mainView);
+                menu.Remove(main);
+                mainView.setButtonStates();
+            break;
+            case States.History:
+                historyView.populate();
+                vBox.Add(historyView);
+                menu.Remove(history);
+            break;
+            case States.Favorites:
+                //vBox.Add(favoritesView);
+               //menu.Remove(favorites);
+            break;
+            case States.Home:
+                vBox.Add(homeView);
+                menu.Remove(home);
+            break;
+        }
+        currentState = newState;
         win.ShowAll();
     }
 }
