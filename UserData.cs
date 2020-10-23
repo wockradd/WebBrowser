@@ -23,7 +23,6 @@ public class UserData{
     public UserData(){
         favorites = new List<Favorite>();
         history = new List<History>();
-        //homeUrl = "http://zetcode.com/gui/gtksharp/menus/"; //JUST FOR TESTING
         currentHistoryIndex = history.Count-1;
     }
 

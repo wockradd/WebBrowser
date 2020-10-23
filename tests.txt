@@ -1,0 +1,7 @@
+delete data and any executables
+compile
+run
+
+search something
+go to history
+delete history go back to main

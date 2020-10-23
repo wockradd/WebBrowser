@@ -9,8 +9,10 @@ public class HomeView:VBox{
     private UserData userData;
 
     public HomeView(UserData data){
+        //init user data
         userData = data;
 
+        //init gui
         currentLabel = new Label("Current Homepage:");
         currentEntry = new Entry();
         newLabel = new Label("New Homepage:");
@@ -18,11 +20,14 @@ public class HomeView:VBox{
         update = new Button("Update");
         buttonAlign = new Alignment(0.5f,0f,0f,0f);
 
+        //set some gui properties
         currentEntry.IsEditable = false;
         buttonAlign.Add(update);
 
+        //add event handlers
         update.Clicked += (obj,args) => updateHomepage(newEntry.Text.Trim());
 
+        //finish layout
         this.PackStart(currentLabel,false,false,0);
         this.PackStart(currentEntry,false,false,0);
         this.PackStart(newLabel,false,false,0);
@@ -31,6 +36,7 @@ public class HomeView:VBox{
 
         setDefaultState();
     }
+    
 
     public void setDefaultState(){
         currentEntry.Text = userData.homeUrl;

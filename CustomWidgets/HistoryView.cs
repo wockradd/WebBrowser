@@ -9,20 +9,24 @@ public class HistoryView:VBox{
     private ScrolledWindow scroll;
 
     public HistoryView(UserData data){
+        //init user data
         userData = data;
 
+        //init gui
         view = new TextView();
         buffer = view.Buffer;
         scroll = new ScrolledWindow();
         delete = new Button("Delete history");
 
-        scroll.Add(view);
-
+        //add event handlers
         delete.Clicked += (obj,args) => deleteHistory();
 
+        //finish layout
+        scroll.Add(view);
         this.PackStart(scroll,true,true,0);
         this.PackStart(delete,false,false,0);
     }
+
 
     public void populate(){
         string s = "";

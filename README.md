@@ -14,11 +14,12 @@ mono a.exe
 - [ ] look at changing requeter thing back to what it was like on the 20th
 - [ ] resizing window not allowed currently, fix that 
 - [x] history views a buggy mess
-- [ ] favorite button always disabled now?
+- [x] favorite button always disabled now?
+- [ ] display title of web page on main window
 
 ### View
 - [x] history view
-- [ ] favorite view
+- [x] favorite view
 - [x] homepage view
 
 ### Homepage
@@ -29,10 +30,12 @@ mono a.exe
 ### Favorites
 - [x] Allow adding to favorites
 - [x] Allow removing to favorites
-- [ ] Allow viewing favorites
+- [ ] Allow going to favorite
+- [x] Allow viewing favorites
 - [ ] Allow editing favorites
 
 ### History
 - [x] Allow viewing history
 - [x] Allow deleting history
 - [x] Allow moving back and forwards through history
+- [ ] Allow clicking on history item to go to it

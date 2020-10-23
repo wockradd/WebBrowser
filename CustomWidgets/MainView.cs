@@ -47,6 +47,7 @@ public class MainView:VBox{
         hBox.PackStart(homeButton,false,false,0);
         hBox.PackStart(favoriteButton,false,false,0);
         
+        //set up final layout
         this.PackStart(hBox,false,false,0);
         this.PackStart(scroll,true,true,0);
         this.PackStart(statusText,false,false,0);
@@ -79,7 +80,7 @@ public class MainView:VBox{
         }else{
             forwardButton.Sensitive = false;
         }
-
+        favoriteButton.Sensitive = true;
         favoriteButton.Label = "\u2606"; // default state, star outline
         foreach(UserData.Favorite f in userData.favorites){
             if(f.url == currentUrl){
@@ -123,7 +124,7 @@ public class MainView:VBox{
     public void reloadCurrentUrl(){
         if(currentUrl != null){
             searchBar.Text = currentUrl; 
-            makeRequest(currentUrl, false);
+            makeRequest(currentUrl, true);
         }else{
             buffer.Text = "Nothing to reload";
         }
@@ -145,7 +146,7 @@ public class MainView:VBox{
     public async void makeRequest(string url, bool addToHistory){
         //before request
         hBox.Sensitive = false;
-        buffer.Text = "Loading...";
+        buffer.Text = "Loading...\nWill timeout after a minute or two if no response";
         statusText.Text = "";
 
         response = await Requester.asyncRequest(url);

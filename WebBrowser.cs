@@ -26,7 +26,7 @@ public class WebBrowser{
     //custom widgets
     private MainView mainView;
     private HomeView homeView;
-    //private FavoritesView favoritesView;
+    private FavoritesView favoritesView;
     private HistoryView historyView;
 
     //file data vars
@@ -56,7 +56,7 @@ public class WebBrowser{
         main = new MenuItem("Main");
         mainView = new MainView(userData);
         homeView = new HomeView(userData);
-        //favoritesView = new FavoritesView(userData);
+        favoritesView = new FavoritesView(userData);
         historyView = new HistoryView(userData);
 
 
@@ -127,8 +127,8 @@ public class WebBrowser{
                 menu.Add(history);
             break;
             case States.Favorites:
-                //vBox.Remove(favoritesView);
-                //menu.Add(favorites);
+                vBox.Remove(favoritesView);
+                menu.Add(favorites);
             break;
             case States.Home:
                 vBox.Remove(homeView);
@@ -150,8 +150,9 @@ public class WebBrowser{
                 menu.Remove(history);
             break;
             case States.Favorites:
-                //vBox.Add(favoritesView);
-               //menu.Remove(favorites);
+                favoritesView = new FavoritesView(userData);
+                vBox.Add(favoritesView);
+                menu.Remove(favorites);
             break;
             case States.Home:
                 vBox.Add(homeView);
