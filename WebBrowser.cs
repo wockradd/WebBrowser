@@ -55,7 +55,7 @@ public class WebBrowser{
 
     public void initGui(){
         //init widgets
-        win = new Window ("Browser");
+        win = new Window ("Home");
         vBox = new VBox(false,0);
         menuBar = new MenuBar();
         menu = new Menu();
@@ -197,6 +197,7 @@ public class WebBrowser{
 
     public void loadHomepage(){
         setState(States.Main);
+        win.Title = "Home";
         if(userData.homeUrl != null){ 
             searchBar.Text = userData.homeUrl;
             makeRequest(userData.homeUrl, true);
@@ -251,6 +252,9 @@ public class WebBrowser{
             setButtonStates();
             searchBar.GrabFocus();
             searchBar.SelectRegion(searchBar.Text.Length,searchBar.Text.Length);
+            if(response.title != null){
+                win.Title = response.title;
+            }else{win.Title = "Error";}
         }
     }
     

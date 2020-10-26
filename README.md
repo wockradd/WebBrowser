@@ -11,13 +11,15 @@ mono a.exe
 - [x] just need to do a lot of refactoring, only add more features once its nice and clean
 - [x] check if messing with menus while getting requests breaks everything
 - [x] better set state alg
-- [ ] look at changing requeter thing back to what it was like on the 20th
+- [x] look at changing requeter thing back to what it was like on the 20th
 - [ ] resizing window not allowed currently, fix that 
 - [x] history views a buggy mess
 - [x] favorite button always disabled now?
-- [ ] display title of web page on main window
+- [x] display title of web page on main window
 - [x] stop requests going through with empty urls
 - [ ] check public/private status of favoriteitem and favoriteview vars
+- [ ] status bar when in favorite view to let the user know the changes have been saved
+- [ ] need to disable forward, back buttons after history is deleted
 
 ### View
 - [x] history view

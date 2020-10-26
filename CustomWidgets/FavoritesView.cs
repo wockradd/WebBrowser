@@ -23,7 +23,6 @@ public class FavoritesView:ScrolledWindow{
     public void updateName(FavoriteItem f){
         if(f.nameEntry.Text != ""){
             userData.changeFavoriteName(f.nameEntry.Text, f.urlEntry.Text);
-            f.save.Label = "Saved";
         }
     }
 }

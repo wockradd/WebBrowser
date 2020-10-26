@@ -8,12 +8,19 @@ public class Requester{
     public struct Response{
         public string res {get;set;}
         public int status {get;set;}
+        public string title {get;set;}
     } 
 
     static private Regex urlRegex = new Regex(@"^https?\:\/\/(www\.)?[a-zA-Z0-9@:%._\+~#=-]+\.[a-zA-Z0-9@:%_\+.~#?&/=-]+$");
     
     static public bool matchesUrl(string test){
         return urlRegex.IsMatch(test);
+    }
+
+    static public string getTitle(string html){
+        int start = html.IndexOf("<title>");
+        int end = html.IndexOf("</title>");
+        return html.Substring(start+7,end-start-7);
     }
 
     static public async Task<Response> asyncRequest(string url){
@@ -36,6 +43,7 @@ public class Requester{
                 resStream = webRes.GetResponseStream();
                 streamReader= new StreamReader(resStream);
                 response.res = streamReader.ReadToEnd();
+                response.title = getTitle(response.res);
 
             }catch(WebException we){//valid url but error
                 response.res = we.Message;
