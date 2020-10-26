@@ -2,8 +2,8 @@ using Gtk;
 
 public class FavoriteItem:Table{
     private Label urlLabel,nameLabel;
-    private Entry urlEntry,nameEntry;
-    private Button gotoUrl, save;
+    public Entry urlEntry,nameEntry;
+    public Button gotoUrl, save;
 
     public FavoriteItem(string url, string name)
     :base(2,3,false){

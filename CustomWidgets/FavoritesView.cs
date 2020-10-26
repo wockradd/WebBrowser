@@ -15,7 +15,12 @@ public class FavoritesView:ScrolledWindow{
         }
         for(int i=0 ; i<items.Count ; i++){
             vBox.PackStart(items[i],false,false,0);
+            items[i].save.Clicked += (obj,args) => updateName((FavoriteItem)((Button)obj).Parent);
         }
         this.Add(vBox);
+    }
+
+    public void updateName(FavoriteItem f){
+        userData.changeFavoriteName(f.nameEntry.Text, f.urlEntry.Text);
     }
 }

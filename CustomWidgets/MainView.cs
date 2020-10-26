@@ -144,21 +144,23 @@ public class MainView:VBox{
 
 
     public async void makeRequest(string url, bool addToHistory){
-        //before request
-        hBox.Sensitive = false;
-        buffer.Text = "Loading...\nWill timeout after a minute or two if no response";
-        statusText.Text = "";
+        if(url != ""){
+            //before request
+            hBox.Sensitive = false;
+            buffer.Text = "Loading...\nWill timeout after a minute or two if no response";
+            statusText.Text = "";
 
-        response = await Requester.asyncRequest(url);
+            response = await Requester.asyncRequest(url);
 
-        //after request
-        buffer.Text = response.res;
-        statusText.Markup = "<span weight='bold' size='larger'>Status: " + response.status.ToString() + "</span>";
-        hBox.Sensitive = true;
-        currentUrl = url;
-        if(addToHistory){userData.addHistory(url,DateTime.Now);}
-        setButtonStates();
-        searchBar.GrabFocus();
-        searchBar.SelectRegion(searchBar.Text.Length,searchBar.Text.Length);
+            //after request
+            buffer.Text = response.res;
+            statusText.Markup = "<span weight='bold' size='larger'>Status: " + response.status.ToString() + "</span>";
+            hBox.Sensitive = true;
+            currentUrl = url;
+            if(addToHistory){userData.addHistory(url,DateTime.Now);}
+            setButtonStates();
+            searchBar.GrabFocus();
+            searchBar.SelectRegion(searchBar.Text.Length,searchBar.Text.Length);
+        }
     }
 }

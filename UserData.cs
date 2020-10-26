@@ -46,6 +46,19 @@ public class UserData{
         favorites.Add(f);
     }
 
+    public void changeFavoriteName(string newName, string url){
+        Favorite f = new Favorite();
+        f.name = newName;
+        f.url = url;
+        for(int i=0 ; i<favorites.Count ; i++){
+            if(favorites[i].url == url){
+                favorites.RemoveAt(i);
+                break;
+            }
+        }
+        favorites.Add(f);
+    }
+
     public string getHistory(int index){
         return history[index].url;
     }

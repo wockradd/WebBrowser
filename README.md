@@ -16,11 +16,13 @@ mono a.exe
 - [x] history views a buggy mess
 - [x] favorite button always disabled now?
 - [ ] display title of web page on main window
+- [x] stop requests going through with empty urls
 
 ### View
 - [x] history view
 - [x] favorite view
 - [x] homepage view
+- [x] main view
 
 ### Homepage
 - [x] Allow setting homepage
@@ -30,9 +32,9 @@ mono a.exe
 ### Favorites
 - [x] Allow adding to favorites
 - [x] Allow removing to favorites
-- [ ] Allow going to favorite
+- [ ] Allow clicking on favorite to go to it
 - [x] Allow viewing favorites
-- [ ] Allow editing favorites
+- [x] Allow editing favorites
 
 ### History
 - [x] Allow viewing history
