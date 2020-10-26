@@ -14,7 +14,7 @@ using System.Runtime.Serialization.Formatters.Binary;
     Main GUI class containing all our widgets
 */
 public class WebBrowser{
-    enum States {Main,Home,Favorites,History}
+    public enum States {Main,Home,Favorites,History}
     States currentState;
 
     //deafult widgets
@@ -77,7 +77,7 @@ public class WebBrowser{
         statusText = new Label();
 
         homeView = new HomeView(userData);
-        favoritesView = new FavoritesView(userData,updateStatusBar);
+        favoritesView = new FavoritesView(userData,updateStatusBar,setState,makeRequest);
         historyView = new HistoryView(userData,setButtonStates);
 
         //set up main view
@@ -219,7 +219,7 @@ public class WebBrowser{
             searchBar.Text = currentUrl; 
             makeRequest(currentUrl, true);
         }else{
-            buffer.Text = "Nothing to reload";
+            updateStatusBar("Nothing to reload");
         }
     }
 
@@ -266,15 +266,19 @@ public class WebBrowser{
             }
         }
     }
+
+    public void reloadFavorites(){
+        favoritesView = new FavoritesView(userData,updateStatusBar,setState,makeRequest);
+    }
     
 
     private void setState(States newState){
         //what to do to get ready for state change
+        vBox.Remove(statusText);
         statusText.Text = "";
         switch(currentState){
             case States.Main:
                 vBox.Remove(scroll);
-                vBox.Remove(statusText);
                 menu.Add(main);
             break;
             case States.History:
@@ -283,7 +287,6 @@ public class WebBrowser{
             break;
             case States.Favorites:
                 vBox.Remove(favoritesView);
-                vBox.Remove(statusText);
                 menu.Add(favorites);
             break;
             case States.Home:
@@ -296,27 +299,30 @@ public class WebBrowser{
         //what to do to finalise the state change
         switch(newState){
             case States.Main:
+                win.Title = response.title;
                 vBox.Add(scroll);
-                vBox.PackStart(statusText,false,false,0);
                 menu.Remove(main);
                 setButtonStates();
             break;
             case States.History:
+            win.Title = "History";
                 historyView.populate();
                 vBox.Add(historyView);
                 menu.Remove(history);
             break;
             case States.Favorites:
-                favoritesView = new FavoritesView(userData, updateStatusBar);
+                win.Title = "Favorites";
+                reloadFavorites();
                 vBox.Add(favoritesView);
-                vBox.PackStart(statusText,false,false,0);
                 menu.Remove(favorites);
             break;
             case States.Home:
+                win.Title = "Homepage settings";
                 vBox.Add(homeView);
                 menu.Remove(home);
             break;
         }
+        vBox.PackStart(statusText,false,false,0);
         currentState = newState;
         win.ShowAll();
     }

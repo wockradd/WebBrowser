@@ -42,9 +42,9 @@ public class HistoryView:VBox{
     }
 
 
-    public void deleteHistory(Function func){
+    public void deleteHistory(Function setButtons){
         userData.deleteHistory();
-        func();
+        setButtons();
         populate();
     }
 }

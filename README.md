@@ -41,7 +41,7 @@ mono a.exe
 ### Favorites
 - [x] Allow adding to favorites
 - [x] Allow removing to favorites
-- [ ] Allow clicking on favorite to go to it
+- [x] Allow clicking on favorite to go to it
 - [x] Allow viewing favorites
 - [x] Allow editing favorites
 

@@ -20,7 +20,12 @@ public class Requester{
     static public string getTitle(string html){
         int start = html.IndexOf("<title>");
         int end = html.IndexOf("</title>");
-        return html.Substring(start+7,end-start-7);
+        if(start == -1 || end == -1){
+            return "Couldnt find title";
+        }else{
+            return html.Substring(start+7,end-start-7);
+        }
+        
     }
 
     static public async Task<Response> asyncRequest(string url){
