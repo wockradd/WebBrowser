@@ -64,9 +64,6 @@ public class WebBrowser{
         favorites = new MenuItem("Favorites");
         home = new MenuItem("Homepage");
         main = new MenuItem("Main");
-        homeView = new HomeView(userData);
-        favoritesView = new FavoritesView(userData);
-        historyView = new HistoryView(userData);
         view = new TextView ();
 		buffer = view.Buffer;
         scroll = new ScrolledWindow();
@@ -78,6 +75,10 @@ public class WebBrowser{
         favoriteButton = new Button();
         searchBar = new Entry();
         statusText = new Label();
+
+        homeView = new HomeView(userData);
+        favoritesView = new FavoritesView(userData,updateStatusBar);
+        historyView = new HistoryView(userData,setButtonStates);
 
         //set up main view
         view.Editable = false;
@@ -154,6 +155,10 @@ public class WebBrowser{
         Application.Quit();
     }
 
+    public void updateStatusBar(string status){
+        statusText.Markup = "<span weight='bold' size='larger'>" + status + "</span>";
+    }
+
 
     public void setButtonStates(){
          if(userData.currentHistoryIndex >= 1){
@@ -166,7 +171,6 @@ public class WebBrowser{
         }else{
             forwardButton.Sensitive = false;
         }
-        favoriteButton.Sensitive = true;
         favoriteButton.Label = "\u2606"; // default state, star outline
         foreach(UserData.Favorite f in userData.favorites){
             if(f.url == currentUrl){
@@ -183,14 +187,15 @@ public class WebBrowser{
             if(f.url == currentUrl){
                 alreadyFavorite = true;
                 userData.favorites.Remove(f);
-                statusText.Markup = "<span weight='bold' size='larger'>Removed from favorites</span>";
+                updateStatusBar("Removed from favorites");
                 break;
             }
         }
         if(!alreadyFavorite){
-            statusText.Markup = "<span weight='bold' size='larger'>Added to favorites</span>";
+            updateStatusBar("Added to favorites");
             userData.addFavorite(currentUrl);
         }
+        if(currentState == States.Favorites){setState(States.Favorites);}//update favorite view asap if its open
         setButtonStates();
     }
 
@@ -245,7 +250,7 @@ public class WebBrowser{
 
             //after request
             buffer.Text = response.res;
-            statusText.Markup = "<span weight='bold' size='larger'>Status: " + response.status.ToString() + "</span>";
+            updateStatusBar("Status: " + response.status.ToString());
             hBox.Sensitive = true;
             currentUrl = url;
             if(addToHistory){userData.addHistory(url,DateTime.Now);}
@@ -253,14 +258,19 @@ public class WebBrowser{
             searchBar.GrabFocus();
             searchBar.SelectRegion(searchBar.Text.Length,searchBar.Text.Length);
             if(response.title != null){
+                favoriteButton.Sensitive = true;
                 win.Title = response.title;
-            }else{win.Title = "Error";}
+            }else{
+                win.Title = "Error";
+                favoriteButton.Sensitive = false;
+            }
         }
     }
     
 
     private void setState(States newState){
         //what to do to get ready for state change
+        statusText.Text = "";
         switch(currentState){
             case States.Main:
                 vBox.Remove(scroll);
@@ -273,6 +283,7 @@ public class WebBrowser{
             break;
             case States.Favorites:
                 vBox.Remove(favoritesView);
+                vBox.Remove(statusText);
                 menu.Add(favorites);
             break;
             case States.Home:
@@ -296,8 +307,9 @@ public class WebBrowser{
                 menu.Remove(history);
             break;
             case States.Favorites:
-                favoritesView = new FavoritesView(userData);
+                favoritesView = new FavoritesView(userData, updateStatusBar);
                 vBox.Add(favoritesView);
+                vBox.PackStart(statusText,false,false,0);
                 menu.Remove(favorites);
             break;
             case States.Home:

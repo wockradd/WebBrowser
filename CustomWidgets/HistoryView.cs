@@ -7,8 +7,9 @@ public class HistoryView:VBox{
     private TextBuffer buffer;
     private Button delete;
     private ScrolledWindow scroll;
+    public delegate void Function();
 
-    public HistoryView(UserData data){
+    public HistoryView(UserData data, Function setButtons){
         //init user data
         userData = data;
 
@@ -19,7 +20,7 @@ public class HistoryView:VBox{
         delete = new Button("Delete history");
 
         //add event handlers
-        delete.Clicked += (obj,args) => deleteHistory();
+        delete.Clicked += (obj,args) => deleteHistory(setButtons);
 
         //finish layout
         scroll.Add(view);
@@ -41,8 +42,9 @@ public class HistoryView:VBox{
     }
 
 
-    public void deleteHistory(){
+    public void deleteHistory(Function func){
         userData.deleteHistory();
+        func();
         populate();
     }
 }
