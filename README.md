@@ -17,6 +17,7 @@ mono a.exe
 - [x] favorite button always disabled now?
 - [ ] display title of web page on main window
 - [x] stop requests going through with empty urls
+- [ ] check public/private status of favoriteitem and favoriteview vars
 
 ### View
 - [x] history view

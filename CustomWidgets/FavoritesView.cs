@@ -2,9 +2,9 @@ using Gtk;
 using System.Collections.Generic;
 
 public class FavoritesView:ScrolledWindow{
-    UserData userData;
+    private UserData userData;
     private VBox vBox;
-    List<FavoriteItem> items;
+    private List<FavoriteItem> items;
 
     public FavoritesView(UserData data){
         userData = data;
@@ -21,6 +21,9 @@ public class FavoritesView:ScrolledWindow{
     }
 
     public void updateName(FavoriteItem f){
-        userData.changeFavoriteName(f.nameEntry.Text, f.urlEntry.Text);
+        if(f.nameEntry.Text != ""){
+            userData.changeFavoriteName(f.nameEntry.Text, f.urlEntry.Text);
+            f.save.Label = "Saved";
+        }
     }
 }

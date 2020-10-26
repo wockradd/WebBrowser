@@ -42,7 +42,7 @@ public class UserData{
     public void addFavorite(string url){
         Favorite f = new Favorite();
         f.url = url;
-        f.name = url;
+        f.name = "";
         favorites.Add(f);
     }
 
@@ -59,9 +59,11 @@ public class UserData{
         favorites.Add(f);
     }
 
+
     public string getHistory(int index){
         return history[index].url;
     }
+
 
     //janky
     public void setUpForSaving(){
@@ -72,6 +74,7 @@ public class UserData{
             currentHistoryIndex = history.Count-1;
         }
     }
+
 
     //just for testing
     public void print(){
