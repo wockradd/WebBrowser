@@ -1,10 +1,12 @@
 using Gtk;
 
 public class HistoryItem:Alignment{
-    public string url;
+    //historyview needs to access these vars
+    public string url {get;set;}
+    public Button gotoUrl {get;set;}
+
     private Label urlLabel,timeLabel,titleLabel;
-    public Button gotoUrl;
-    public VBox vBox;
+    private VBox vBox;
 
     public HistoryItem(string url, string time, string title)
     :base(0.5f,0f,0f,0f){

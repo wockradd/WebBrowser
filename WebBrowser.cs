@@ -127,7 +127,6 @@ public class WebBrowser{
         //finish up 
         currentState = States.Main;
         win.SetDefaultSize (1000,600);
-        win.Resizable = false;
         win.Add(vBox);
 		win.ShowAll();
     }

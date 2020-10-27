@@ -2,8 +2,12 @@ using Gtk;
 
 public class FavoriteItem:Table{
     private Label urlLabel,nameLabel;
-    public Entry urlEntry,nameEntry;
-    public Button gotoUrl, save;
+
+    //favoriteview needs to access these vars
+    public Entry urlEntry {get;set;}
+    public Entry nameEntry {get;set;}
+    public Button gotoUrl {get;set;}
+    public Button save {get;set;}
 
     public FavoriteItem(string url, string name)
     :base(2,3,false){

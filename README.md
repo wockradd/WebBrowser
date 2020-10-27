@@ -1,9 +1,7 @@
 # WebBrowser
 A web browser written in c# for f21sc
 ## Compiling and running
-mcs Runner.cs WebBrowser.cs UserData.cs -pkg:gtk-sharp-3.0 -out:a.exe
-
-mono a.exe
+running compile.sh is the easiest way
 
 ### General
 - [x] Timeout if request is taking too long
@@ -12,16 +10,16 @@ mono a.exe
 - [x] check if messing with menus while getting requests breaks everything
 - [x] better set state alg
 - [x] look at changing requeter thing back to what it was like on the 20th
-- [ ] resizing window not allowed currently, fix that 
 - [x] history views a buggy mess
 - [x] favorite button always disabled now?
 - [x] display title of web page on main window
 - [x] stop requests going through with empty urls
-- [ ] check public/private status of favoriteitem vars
-- [ ] check public/private status of historyitem vars
+- [x] check public/private status of favoriteitem vars
+- [x] check public/private status of historyitem vars
 - [x] status bar when in favorite view to let the user know the changes have been saved
 - [x] need to disable forward, back buttons after history is deleted
-- [ ] big clean up
+- [x] resizing window not allowed currently, fix that 
+- [ ] big clean up, add comments, good spacing, etc
 
 ### Submission
 - [ ] screencast
