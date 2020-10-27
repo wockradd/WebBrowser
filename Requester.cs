@@ -40,6 +40,7 @@ public class Requester{
         if(!urlRegex.IsMatch(url)){
             response.res = "Invalid url";
             response.status = -1;
+            response.title = "Error";
         }else{
             webReq = WebRequest.Create(url);
 
@@ -52,6 +53,7 @@ public class Requester{
 
             }catch(WebException we){//valid url but error
                 response.res = we.Message;
+                response.title = "Error";
                 if(we.Status == WebExceptionStatus.ProtocolError){//404,403,etc
                     webRes = we.Response;
                 }else{                                            //name resolution error, etc                     

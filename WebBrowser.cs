@@ -15,7 +15,7 @@ using System.Runtime.Serialization.Formatters.Binary;
 */
 public class WebBrowser{
     public enum States {Main,Home,Favorites,History}
-    States currentState;
+    private States currentState;
 
     //deafult widgets
     private Window win;
@@ -31,13 +31,16 @@ public class WebBrowser{
     private Entry searchBar;
     private Label statusText;
 
+    //custom widgets
     private HomeView homeView;
     private FavoritesView favoritesView;
     private HistoryView historyView;
 
+    //web stuff
     private string currentUrl = null;
     private Requester.Response response;
 
+    //file and user data stuff
     private UserData userData;
     private Stream fileStream;
     private BinaryFormatter formatter;
@@ -78,7 +81,7 @@ public class WebBrowser{
 
         homeView = new HomeView(userData);
         favoritesView = new FavoritesView(userData,updateStatusBar,setState,makeRequest);
-        historyView = new HistoryView(userData,setButtonStates);
+        historyView = new HistoryView(userData,setButtonStates,setState,makeRequest);
 
         //set up main view
         view.Editable = false;
@@ -121,7 +124,6 @@ public class WebBrowser{
         vBox.PackStart(statusText,false,false,0);
 
         
-
         //finish up 
         currentState = States.Main;
         win.SetDefaultSize (1000,600);
@@ -141,7 +143,6 @@ public class WebBrowser{
         }catch(FileNotFoundException fnfe){
             userData = new UserData();
         }
-        userData.print();
     }
 
 
@@ -151,9 +152,9 @@ public class WebBrowser{
         formatter = new BinaryFormatter();
         formatter.Serialize(fileStream,userData);
         fileStream.Close();
-        userData.print();
         Application.Quit();
     }
+
 
     public void updateStatusBar(string status){
         statusText.Markup = "<span weight='bold' size='larger'>" + status + "</span>";
@@ -166,10 +167,17 @@ public class WebBrowser{
         }else{
             backButton.Sensitive = false;
         }
+
         if(userData.currentHistoryIndex < userData.history.Count-1){
             forwardButton.Sensitive = true;
         }else{
             forwardButton.Sensitive = false;
+        }
+
+        if(response.status == 0){
+            favoriteButton.Sensitive = false;
+        }else{
+            favoriteButton.Sensitive = true;
         }
         favoriteButton.Label = "\u2606"; // default state, star outline
         foreach(UserData.Favorite f in userData.favorites){
@@ -193,7 +201,7 @@ public class WebBrowser{
         }
         if(!alreadyFavorite){
             updateStatusBar("Added to favorites");
-            userData.addFavorite(currentUrl);
+            userData.addFavorite(currentUrl,response.title);
         }
         if(currentState == States.Favorites){setState(States.Favorites);}//update favorite view asap if its open
         setButtonStates();
@@ -204,19 +212,17 @@ public class WebBrowser{
         setState(States.Main);
         win.Title = "Home";
         if(userData.homeUrl != null){ 
-            searchBar.Text = userData.homeUrl;
             makeRequest(userData.homeUrl, true);
         }else{
             searchBar.Text = "";
             buffer.Text = "No homepage set.\nGo to View -> Homepage to set one.";
-            favoriteButton.Sensitive = false;
         }
+        setButtonStates();
     }
 
     
     public void reloadCurrentUrl(){
         if(currentUrl != null){
-            searchBar.Text = currentUrl; 
             makeRequest(currentUrl, true);
         }else{
             updateStatusBar("Nothing to reload");
@@ -226,13 +232,19 @@ public class WebBrowser{
 
     public void goBack(){
         makeRequest(userData.getHistory(--userData.currentHistoryIndex),false);
-        searchBar.Text = userData.getHistory(userData.currentHistoryIndex);
     }
 
 
     public void goForward(){
         makeRequest(userData.getHistory(++userData.currentHistoryIndex),false);
-        searchBar.Text = userData.getHistory(userData.currentHistoryIndex);
+    }
+
+    public void reloadFavorites(){
+        favoritesView = new FavoritesView(userData,updateStatusBar,setState,makeRequest);
+    }
+
+    public void reloadHistory(){
+        historyView = new HistoryView(userData,setButtonStates,setState,makeRequest);
     }
 
 
@@ -245,6 +257,8 @@ public class WebBrowser{
             hBox.Sensitive = false;
             buffer.Text = "Loading...\nWill timeout after a minute or two if no response";
             statusText.Text = "";
+            win.Title = "Loading";
+            searchBar.Text = url;
 
             response = await Requester.asyncRequest(url);
 
@@ -253,23 +267,14 @@ public class WebBrowser{
             updateStatusBar("Status: " + response.status.ToString());
             hBox.Sensitive = true;
             currentUrl = url;
-            if(addToHistory){userData.addHistory(url,DateTime.Now);}
+            if(addToHistory){userData.addHistory(url,DateTime.Now,response.title);}
             setButtonStates();
             searchBar.GrabFocus();
             searchBar.SelectRegion(searchBar.Text.Length,searchBar.Text.Length);
-            if(response.title != null){
-                favoriteButton.Sensitive = true;
-                win.Title = response.title;
-            }else{
-                win.Title = "Error";
-                favoriteButton.Sensitive = false;
-            }
+            win.Title = response.title;
         }
     }
 
-    public void reloadFavorites(){
-        favoritesView = new FavoritesView(userData,updateStatusBar,setState,makeRequest);
-    }
     
 
     private void setState(States newState){
@@ -302,11 +307,12 @@ public class WebBrowser{
                 win.Title = response.title;
                 vBox.Add(scroll);
                 menu.Remove(main);
+                vBox.PackStart(statusText,false,false,0);
                 setButtonStates();
             break;
             case States.History:
             win.Title = "History";
-                historyView.populate();
+                reloadHistory();
                 vBox.Add(historyView);
                 menu.Remove(history);
             break;
@@ -314,6 +320,7 @@ public class WebBrowser{
                 win.Title = "Favorites";
                 reloadFavorites();
                 vBox.Add(favoritesView);
+                vBox.PackStart(statusText,false,false,0);
                 menu.Remove(favorites);
             break;
             case States.Home:
@@ -322,7 +329,6 @@ public class WebBrowser{
                 menu.Remove(home);
             break;
         }
-        vBox.PackStart(statusText,false,false,0);
         currentState = newState;
         win.ShowAll();
     }

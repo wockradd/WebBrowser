@@ -18,6 +18,7 @@ mono a.exe
 - [x] display title of web page on main window
 - [x] stop requests going through with empty urls
 - [ ] check public/private status of favoriteitem vars
+- [ ] check public/private status of historyitem vars
 - [x] status bar when in favorite view to let the user know the changes have been saved
 - [x] need to disable forward, back buttons after history is deleted
 - [ ] big clean up
@@ -49,4 +50,4 @@ mono a.exe
 - [x] Allow viewing history
 - [x] Allow deleting history
 - [x] Allow moving back and forwards through history
-- [ ] Allow clicking on history item to go to it
+- [x] Allow clicking on history item to go to it

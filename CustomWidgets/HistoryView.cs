@@ -1,50 +1,54 @@
 using Gtk;
 using System.Collections.Generic;
 
-public class HistoryView:VBox{
+public class HistoryView:ScrolledWindow{
     private UserData userData;
-    private TextView view;
-    private TextBuffer buffer;
+    private List<HistoryItem> items;
     private Button delete;
-    private ScrolledWindow scroll;
-    public delegate void Function();
+    private VBox vBox;
 
-    public HistoryView(UserData data, Function setButtons){
+    public delegate void Func1();
+    public delegate void Func2(WebBrowser.States s);
+    public delegate void Func3(string s, bool b);
+
+    public HistoryView(UserData data, Func1 setButtons, Func2 changeView, Func3 makeRequest){
         //init user data
         userData = data;
 
-        //init gui
-        view = new TextView();
-        buffer = view.Buffer;
-        scroll = new ScrolledWindow();
         delete = new Button("Delete history");
+        vBox = new VBox(false, 20);
+
+        items = new List<HistoryItem>();
+        foreach(UserData.History h in userData.history){
+            items.Add(new HistoryItem(h.url, h.time.ToString(),h.title));
+        }
+        for(int i=items.Count-1 ; i>=0 ; i--){
+            vBox.PackStart(items[i],false,false,0);
+            items[i].gotoUrl.Clicked += (obj,args) => gotoHistory(changeView, makeRequest,((HistoryItem)((Button)obj).Parent.Parent).url);
+        }
+        
 
         //add event handlers
         delete.Clicked += (obj,args) => deleteHistory(setButtons);
 
         //finish layout
-        scroll.Add(view);
-        this.PackStart(scroll,true,true,0);
-        this.PackStart(delete,false,false,0);
+        vBox.PackStart(delete,false,false,0);
+        this.Add(vBox);
     }
 
 
-    public void populate(){
-        string s = "";
-        if(userData.history.Count == 0){
-            buffer.Text = "No history";
-        }else{
-            foreach(UserData.History h in userData.history){
-                s += "Url: " + h.url + "\nTime: " + h.time + "\n\n";
-            }
-            buffer.Text = s;
-        }
-    }
+    
 
-
-    public void deleteHistory(Function setButtons){
+    public void deleteHistory(Func1 setButtons){
         userData.deleteHistory();
+        for(int i=items.Count-1 ; i>=0 ; i--){
+            vBox.Remove(items[i]);
+        }
         setButtons();
-        populate();
+    }
+
+    public void gotoHistory(Func2 changeView, Func3 makeRequest, string url){
+        changeView(WebBrowser.States.Main);
+        makeRequest(url,true);
     }
 }

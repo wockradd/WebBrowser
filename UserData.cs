@@ -17,6 +17,7 @@ public class UserData{
     [Serializable]
     public struct History{
         public string url {get;set;}
+        public string title {get;set;}
         public DateTime time {get;set;}
     }
 
@@ -26,10 +27,11 @@ public class UserData{
         currentHistoryIndex = history.Count-1;
     }
 
-    public void addHistory(string url, DateTime time){
+    public void addHistory(string url, DateTime time, string title){
         History h = new History();
         h.time = time;
         h.url = url;
+        h.title = title;
         history.Add(h);
         currentHistoryIndex = history.Count-1;
     }
@@ -39,10 +41,10 @@ public class UserData{
         currentHistoryIndex = history.Count-1;
     }
 
-    public void addFavorite(string url){
+    public void addFavorite(string url, string name){
         Favorite f = new Favorite();
         f.url = url;
-        f.name = "";
+        f.name = name;
         favorites.Add(f);
     }
 
