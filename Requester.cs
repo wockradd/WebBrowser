@@ -3,7 +3,9 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.IO;
 
-
+/*
+    Class that actually deals with http requests
+*/
 public class Requester{
     public struct Response{
         public string res {get;set;}
@@ -13,9 +15,12 @@ public class Requester{
 
     static private Regex urlRegex = new Regex(@"^https?\:\/\/(www\.)?[a-zA-Z0-9@:%._\+~#=-]+\.[a-zA-Z0-9@:%_\+.~#?&/=-]+$");
     
+
+    //so other classes can test urls against the regex
     static public bool matchesUrl(string test){
         return urlRegex.IsMatch(test);
     }
+
 
     static public string getTitle(string html){
         int start = html.IndexOf("<title>");
@@ -28,6 +33,7 @@ public class Requester{
         
     }
 
+    //main method for requesting things
     static public async Task<Response> asyncRequest(string url){
         WebRequest webReq;
         WebResponse webRes;
@@ -63,7 +69,7 @@ public class Requester{
                 } 
             }
 
-            if(!fatalError){
+            if(!fatalError){//fatal errors wont have status codes
                 response.status = (int)((HttpWebResponse)webRes).StatusCode;
                 webRes.Close();
             }

@@ -1,6 +1,9 @@
 using Gtk;
 using System.Collections.Generic;
 
+/*
+    Custom widget to deal with the users request history
+*/
 public class HistoryView:ScrolledWindow{
     private UserData userData;
     private List<HistoryItem> items;
@@ -15,20 +18,23 @@ public class HistoryView:ScrolledWindow{
         //init user data
         userData = data;
 
+        //init widgets
         delete = new Button("Delete history");
         vBox = new VBox(false, 20);
 
+        //populate items list
         items = new List<HistoryItem>();
         foreach(UserData.History h in userData.history){
             items.Add(new HistoryItem(h.url, h.time.ToString(),h.title));
         }
+
+        //init and add items to the view
         for(int i=items.Count-1 ; i>=0 ; i--){
             vBox.PackStart(items[i],false,false,0);
             items[i].gotoUrl.Clicked += (obj,args) => gotoHistory(changeView, makeRequest,((HistoryItem)((Button)obj).Parent.Parent).url);
         }
         
-
-        //add event handlers
+        //add main event handlers
         delete.Clicked += (obj,args) => deleteHistory(setButtons);
 
         //finish layout

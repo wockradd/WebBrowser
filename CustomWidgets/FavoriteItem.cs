@@ -1,5 +1,8 @@
 using Gtk;
 
+/*
+    Custom widget that contains one item in the users favorites
+*/
 public class FavoriteItem:Table{
     private Label urlLabel,nameLabel;
 
@@ -11,6 +14,7 @@ public class FavoriteItem:Table{
 
     public FavoriteItem(string url, string name)
     :base(2,3,false){
+        //init widgets
         urlLabel = new Label("Url:");
         nameLabel = new Label("Name:");
         urlEntry = new Entry(url);
@@ -19,6 +23,7 @@ public class FavoriteItem:Table{
         gotoUrl = new Button("Go to");
         save = new Button("Save name changes");
 
+        //set up layout
         this.Attach(urlLabel,0,1,0,1);
         this.Attach(urlEntry,1,2,0,1);
         this.Attach(gotoUrl,2,3,0,1);

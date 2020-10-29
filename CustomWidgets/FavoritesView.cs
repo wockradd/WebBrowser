@@ -1,6 +1,8 @@
 using Gtk;
 using System.Collections.Generic;
-
+/*
+    Custom widget to deal with the users favorites
+*/
 public class FavoritesView:ScrolledWindow{
     private UserData userData;
     private VBox vBox;
@@ -11,17 +13,26 @@ public class FavoritesView:ScrolledWindow{
     public delegate void Func3(string s, bool b);
 
     public FavoritesView(UserData data, Func1 updateStatus, Func2 changeView, Func3 makeRequest){
+        //init user data
         userData = data;
+
+        //init widgets
         items = new List<FavoriteItem>();
         vBox = new VBox(false, 20);
+
+        //populate item list
         foreach(UserData.Favorite f in userData.favorites){
             items.Add(new FavoriteItem(f.url, f.name));
         }
+
+        //init and add items to the view
         for(int i=0 ; i<items.Count ; i++){
             vBox.PackStart(items[i],false,false,0);
             items[i].save.Clicked += (obj,args) => updateName((FavoriteItem)((Button)obj).Parent, updateStatus);
             items[i].gotoUrl.Clicked += (obj,args) => gotoFav(changeView, makeRequest,((FavoriteItem)((Button)obj).Parent).urlEntry.Text);
         }
+
+        //finalise
         this.Add(vBox);
     }
 

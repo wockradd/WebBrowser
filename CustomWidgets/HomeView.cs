@@ -1,5 +1,8 @@
 using Gtk;
 
+/*
+    Custom widget to deal with setting the users homepage
+*/
 public class HomeView:VBox{
     private Label currentLabel, newLabel;
     private Entry currentEntry,newEntry;

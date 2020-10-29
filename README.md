@@ -19,11 +19,12 @@ running compile.sh is the easiest way
 - [x] status bar when in favorite view to let the user know the changes have been saved
 - [x] need to disable forward, back buttons after history is deleted
 - [x] resizing window not allowed currently, fix that 
-- [ ] big clean up, add comments, good spacing, etc
+- [x] big clean up, add comments, good spacing, etc
+- [ ] better finding title alg
 
 ### Submission
-- [ ] screencast
-- [ ] standalone executable
+- [x] screencast
+- [x] standalone executable
 - [ ] report
 
 ### View

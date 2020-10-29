@@ -1,6 +1,9 @@
 using System;
 using System.Collections.Generic;
 
+/*
+    This class contains and deals with all the users data such as their history
+*/
 [Serializable]
 public class UserData{
     public string homeUrl {get;set;}
@@ -69,7 +72,7 @@ public class UserData{
 
     //janky
     public void setUpForSaving(){
-        //weirdness if you dont have a homepage set, will explain in report
+        //weirdness if you dont have a homepage set
         if(homeUrl == null){
             currentHistoryIndex = history.Count;
         }else{

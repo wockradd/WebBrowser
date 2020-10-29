@@ -4,13 +4,6 @@ using System;
 using System.Runtime.Serialization.Formatters.Binary;
 
 /*
-    http://zetcode.com/gui/gtksharp/menus/
-    http://status.savanttools.com/?code=400%20Bad%20Request
-    http://status.savanttools.com/?code=403%20Forbidden
-    http://status.savanttools.com/?code=404%20Not%20Found
-*/
-
-/*
     Main GUI class containing all our widgets
 */
 public class WebBrowser{
@@ -95,7 +88,7 @@ public class WebBrowser{
         hBox.PackStart(homeButton,false,false,0);
         hBox.PackStart(favoriteButton,false,false,0);
 
-         //set up menu
+        //set up menu
         viewMenu.Submenu = menu;
         menu.Add(home);
         menu.Add(favorites);
@@ -173,7 +166,7 @@ public class WebBrowser{
             forwardButton.Sensitive = false;
         }
 
-        if(response.status == 0){
+        if(response.status == 0){//no requests have been sent yet
             favoriteButton.Sensitive = false;
         }else{
             favoriteButton.Sensitive = true;
